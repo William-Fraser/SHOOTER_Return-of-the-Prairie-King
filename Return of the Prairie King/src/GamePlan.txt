@@ -1,0 +1,50 @@
+
+        Return of the Prarie King,  - Stardew Valley Exaltaiton Tribute
+                            blessed be worried monkey
+
+GAMEPLAY
+    Player starts in middle of map at movementSpeed 1, shootingSpeed 1 and 
+    can obtain upgrades that last a definate or infinate amount of time,
+    respawns on middle of map with 3 mississippis of respawn time 
+    
+    Player must defeat all enemies before moving onto next area,
+    
+    If time ends before player defeats enemies theres 
+    a waiting period for the player to defeat remaining,
+    
+    Player can use aquired gold to upgrade self at shop,
+    
+    shop appears every second level after starting a new area,
+
+    Outlaw fight every fifth level, winning starts new area
+
+
+SPRITESHEET
+    Stage, - levels 1,2. 
+    Gunslinger, - almost complete needs death anim (& vicory anim?)
+    Bullet,
+    Zombie(multiple types), - place holder (zombieWhacker Zombie) 
+    Items,
+    Money,
+    Shop,
+    Outlaw
+
+FUNCTIONAL
+    PlayerCharacter(Gunslinger) - starts in middle, moves & shoots in cardinal directions (WASD & UP,LEFT,DOWN,RIGHT respectively), spacebar or shift uses Item,
+    PlayerAttack(Bullet) - starts from playerShoot Method moves in direction shot, kills Zombies,
+    Zombie - starts in spawning zones, has multiple interchanging AI which is randomized at start of life, kills player,
+    Items - mutiple stat changing pick ups that get put into the players inventory first then if inventory full used immediately,
+    Money - pick up and add amount to counter,
+    Shop - purchase permenant upgrades with money appears every 2nd level,
+    Outlaw - Similar to Gunslinger
+
+ARCH
+    Gunslinger
+        Shoot()
+        UseItem()
+    Bullet
+        KillZombie(Zombie)
+    Zombie
+        ChooseAI()
+    Outlaw
+        Shoot() - character class can shoot, excludes zombie
