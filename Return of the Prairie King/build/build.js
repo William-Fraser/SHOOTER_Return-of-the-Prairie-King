@@ -10092,6 +10092,65 @@ module.exports.formatError = function(err) {
 
 /***/ }),
 
+/***/ "./src/Characters/Character.ts":
+/*!*************************************!*\
+  !*** ./src/Characters/Character.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
+const Object_1 = __webpack_require__(/*! ../Objects/Object */ "./src/Objects/Object.ts");
+class Character extends Object_1.default {
+    constructor(stage, assetManager) {
+        super(stage, assetManager);
+    }
+    killMe() {
+        if ((this._state == Constants_1.STATE.DYING) || (this._state == Constants_1.STATE.DEAD)) {
+            return;
+        }
+        this.IdleMe();
+        this._sprite.on("animationend", () => {
+            this._sprite.stop();
+            this.stage.removeChild(this._sprite);
+            this._state = Constants_1.STATE.DEAD;
+        });
+    }
+}
+exports.default = Character;
+
+
+/***/ }),
+
+/***/ "./src/Characters/Gunslinger.ts":
+/*!**************************************!*\
+  !*** ./src/Characters/Gunslinger.ts ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
+const Character_1 = __webpack_require__(/*! ./Character */ "./src/Characters/Character.ts");
+class Gunslinger extends Character_1.default {
+    constructor(stage, assetManager) {
+        super(stage, assetManager);
+        this.PositionMe(Constants_1.STAGE_WIDTH / 2, Constants_1.STAGE_HEIGHT / 2);
+        stage.addChild(this.sprite);
+    }
+    Shoot() {
+    }
+}
+exports.default = Gunslinger;
+
+
+/***/ }),
+
 /***/ "./src/Game.ts":
 /*!*********************!*\
   !*** ./src/Game.ts ***!
@@ -10105,11 +10164,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __webpack_require__(/*! createjs */ "./node_modules/createjs/builds/1.0.0/createjs.min.js");
 const Constants_1 = __webpack_require__(/*! ./Global/Constants */ "./src/Global/Constants.ts");
 const AssetManager_1 = __webpack_require__(/*! ./Global/AssetManager */ "./src/Global/AssetManager.ts");
+const Map_1 = __webpack_require__(/*! ./World/Map */ "./src/World/Map.ts");
+const Gunslinger_1 = __webpack_require__(/*! ./Characters/Gunslinger */ "./src/Characters/Gunslinger.ts");
 let stage;
 let canvas;
 let assetManager;
+let map;
+let player;
 function onReady(e) {
     console.log(">> adding sprites to game");
+    map = new Map_1.default(stage, assetManager);
+    player = new Gunslinger_1.default(stage, assetManager);
     createjs.Ticker.framerate = Constants_1.FRAME_RATE;
     createjs.Ticker.on("tick", onTick);
     console.log(">> game ready");
@@ -10220,8 +10285,8 @@ exports.default = AssetManager;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ASSET_MANIFEST = exports.STATE = exports.PLAYER_FIRESPEED = exports.PLAYER_MOVESPEED = exports.FRAME_RATE = exports.STAGE_HEIGHT = exports.STAGE_WIDTH = void 0;
-exports.STAGE_WIDTH = 600;
-exports.STAGE_HEIGHT = 600;
+exports.STAGE_WIDTH = 704;
+exports.STAGE_HEIGHT = 704;
 exports.FRAME_RATE = 30;
 exports.PLAYER_MOVESPEED = 0;
 exports.PLAYER_FIRESPEED = 0;
@@ -10247,6 +10312,261 @@ exports.ASSET_MANIFEST = [
         data: 0
     }
 ];
+
+
+/***/ }),
+
+/***/ "./src/Global/Toolkit.ts":
+/*!*******************************!*\
+  !*** ./src/Global/Toolkit.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.pointHit = exports.boxHit = exports.randomMe = void 0;
+function randomMe(low, high) {
+    let randomNum = 0;
+    randomNum = Math.floor(Math.random() * (high - low + 1)) + low;
+    return randomNum;
+}
+exports.randomMe = randomMe;
+function boxHit(sprite1, sprite2) {
+    let width1 = sprite1.getBounds().width;
+    let height1 = sprite1.getBounds().height;
+    let width2 = sprite2.getBounds().width;
+    let height2 = sprite2.getBounds().height;
+    if ((sprite1.x + width1 > sprite2.x) &&
+        (sprite1.y + height1 > sprite2.y) &&
+        (sprite1.x < sprite2.x + width2) &&
+        (sprite1.y < sprite2.y + height2)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+exports.boxHit = boxHit;
+function pointHit(sprite1, sprite2, sprite1HitX = 0, sprite1HitY = 0, stage = null) {
+    if (stage != null) {
+        let markerPoint = sprite1.localToGlobal(sprite1HitX, sprite1HitY);
+        let marker = new createjs.Shape();
+        marker.graphics.beginFill("#FF00EC");
+        marker.graphics.drawRect(0, 0, 4, 4);
+        marker.regX = 2;
+        marker.regY = 2;
+        marker.x = markerPoint.x;
+        marker.y = markerPoint.y;
+        marker.cache(0, 0, 4, 4);
+        stage.addChild(marker);
+    }
+    let point = sprite1.localToLocal(sprite1HitX, sprite1HitY, sprite2);
+    if (sprite2.hitTest(point.x, point.y)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+exports.pointHit = pointHit;
+
+
+/***/ }),
+
+/***/ "./src/Objects/Object.ts":
+/*!*******************************!*\
+  !*** ./src/Objects/Object.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
+var DIRECTION;
+(function (DIRECTION) {
+    DIRECTION[DIRECTION["DOWN"] = 0] = "DOWN";
+    DIRECTION[DIRECTION["UP"] = 1] = "UP";
+    DIRECTION[DIRECTION["LEFT"] = 2] = "LEFT";
+    DIRECTION[DIRECTION["RIGHT"] = 3] = "RIGHT";
+})(DIRECTION || (DIRECTION = {}));
+class Object {
+    constructor(stage, assetManager) {
+        this.stage = stage;
+        this._state = Constants_1.STATE.IDLE;
+    }
+    get sprite() { return this._sprite; }
+    get state() { return this._state; }
+    set state(value) { this._state = value; }
+    StartMe() {
+        if (this._state == Constants_1.STATE.IDLE) {
+            this._state = Constants_1.STATE.MOVING;
+        }
+    }
+    IdleMe() {
+        if (this._state == Constants_1.STATE.MOVING) {
+            this._state = Constants_1.STATE.IDLE;
+        }
+    }
+    PositionMe(x, y) {
+        this._sprite.x = x;
+        this._sprite.y = y;
+    }
+    Update() {
+        let sprite = this._sprite;
+        switch (this._state) {
+            case Constants_1.STATE.IDLE:
+                return;
+            case Constants_1.STATE.MOVING:
+                switch (this._direction) {
+                    case DIRECTION.UP:
+                        sprite.y -= this._movementSpeed;
+                        return;
+                    case DIRECTION.DOWN:
+                        sprite.y += this._movementSpeed;
+                        return;
+                    case DIRECTION.LEFT:
+                        sprite.x -= this._movementSpeed;
+                        return;
+                    case DIRECTION.RIGHT:
+                        sprite.x += this._movementSpeed;
+                        return;
+                }
+                return;
+        }
+    }
+}
+exports.default = Object;
+
+
+/***/ }),
+
+/***/ "./src/World/Map.ts":
+/*!**************************!*\
+  !*** ./src/World/Map.ts ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
+const Toolkit_1 = __webpack_require__(/*! ../Global/Toolkit */ "./src/Global/Toolkit.ts");
+const TOTALTILES = 22;
+class Map {
+    constructor(stage, assetManager) {
+        let tileRef;
+        tileRef = assetManager.getSprite("assets", "Backgrounds/TileDesert/Ground", Constants_1.STAGE_WIDTH, Constants_1.STAGE_HEIGHT);
+        this.tileHeight = tileRef.getBounds().height;
+        this.tileWidth = tileRef.getBounds().width;
+        this.setMap = [];
+        for (let Y = 0; Y <= 22; Y++) {
+            this.setMap[Y] = [];
+            for (let X = 0; X <= 22; X++) {
+                this.setMap[Y][X] = assetManager.getSprite("assets", "Backgrounds/TileDesert/Ground", this.tileWidth * X, this.tileHeight * Y);
+                stage.addChild(this.setMap[Y][X]);
+            }
+        }
+        this.stage = stage;
+        this.assetManager = assetManager;
+        this.CreateMap();
+        this.setCurrentMap();
+    }
+    setCurrentMap() {
+        this.currentMap = this.setMap;
+        for (let Y = 0; Y <= 22; Y++) {
+            for (let X = 0; X <= 22; X++) {
+                this.stage.addChild(this.currentMap[Y][X]);
+            }
+        }
+    }
+    AddEnterances() {
+        let enteranceSize = 4;
+        let start = (TOTALTILES / 2 + 1) - (enteranceSize / 2);
+        let stop = (TOTALTILES / 2 + 1) + (enteranceSize / 2);
+        let placeTile = 32 * start;
+        let placementReset = placeTile;
+        for (let i = start; i < stop; i++) {
+            this.setMap[1][i] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Ground", placeTile, 0);
+            placeTile += 32;
+        }
+        placeTile = placementReset;
+        for (let i = start; i < stop; i++) {
+            this.setMap[TOTALTILES][i] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Ground", placeTile, 672);
+            placeTile += 32;
+        }
+        placeTile = placementReset;
+        for (let i = start; i < stop; i++) {
+            this.setMap[i][TOTALTILES] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Ground", 672, placeTile);
+            placeTile += 32;
+        }
+        placeTile = placementReset;
+        for (let i = start; i < stop; i++) {
+            this.setMap[i][1] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Ground", 0, placeTile);
+            placeTile += 32;
+        }
+        placeTile = placementReset;
+    }
+    CreateMap() {
+        let holderX = 0;
+        let holderY = 0;
+        for (let Y = 1; Y <= TOTALTILES; Y++) {
+            for (let X = 1; X <= TOTALTILES; X++) {
+                console.debug("X,Y : " + X + "," + Y);
+                console.debug("Xhold,YHold : " + holderX + "," + holderY);
+                if ((Y == 1 || Y == TOTALTILES) || (X == 1 || X == TOTALTILES)) {
+                    if (Y == 1) {
+                        console.debug("north");
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Top", holderX, holderY);
+                    }
+                    else if (X == 1) {
+                        console.debug("west");
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Left", holderX, holderY);
+                    }
+                    else if (X == TOTALTILES) {
+                        console.debug("east");
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Right", holderX, holderY);
+                    }
+                    else if (Y == TOTALTILES) {
+                        console.debug("south");
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Bottom", holderX, holderY);
+                    }
+                    if (Y == TOTALTILES && X == TOTALTILES) {
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/BottomRightCorner", holderX, holderY);
+                    }
+                    else if (Y == TOTALTILES && X == 1) {
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/BottomLeftCorner", holderX, holderY);
+                    }
+                    else if (Y == 1 && X == TOTALTILES) {
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/TopRightCorner", holderX, holderY);
+                    }
+                    else if (Y == 1 && X == 1) {
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/TopLeftCorner", holderX, holderY);
+                    }
+                }
+                else {
+                    let chooseType = Toolkit_1.randomMe(0, 10);
+                    if (chooseType > 8) {
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/GroundAlt", holderX, holderY);
+                    }
+                    else {
+                        this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Ground", holderX, holderY);
+                    }
+                }
+                holderX += 32;
+            }
+            holderX = 0;
+            holderY += 32;
+        }
+        this.AddEnterances();
+        console.debug(">> created map");
+    }
+}
+exports.default = Map;
 
 
 /***/ }),

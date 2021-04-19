@@ -6,6 +6,10 @@ import "createjs";
 // importing game constants
 import { STAGE_WIDTH, STAGE_HEIGHT, FRAME_RATE, ASSET_MANIFEST } from "./Global/Constants";
 import AssetManager from "./Global/AssetManager";
+import Object from "./Objects/Object"
+import Character from "./Characters/Character";
+import Map from "./World/Map"
+import Gunslinger from "./Characters/Gunslinger";
 
 // game variables
 let stage:createjs.StageGL;
@@ -15,14 +19,16 @@ let canvas:HTMLCanvasElement;
 let assetManager:AssetManager;
 
 // game objects
-// ...
+let map:Map;
+let player:Gunslinger;
 
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
     console.log(">> adding sprites to game");
     
     // construct game object sprites
-    // ...  
+    map = new Map(stage, assetManager);
+    player = new Gunslinger(stage, assetManager);
 
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;

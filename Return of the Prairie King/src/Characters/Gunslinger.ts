@@ -14,13 +14,13 @@ export default class Gunslinger extends Character {
 
 
         this.PositionMe(STAGE_WIDTH/2, STAGE_HEIGHT/2);
-        
+        stage.addChild(this.sprite);
     }
 
     //public methods
     public Shoot():void {
-
-
         //spawns bullet
+        
+        
     }
 }

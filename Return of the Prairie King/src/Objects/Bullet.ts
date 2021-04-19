@@ -11,6 +11,7 @@ export default class Bullet extends Object {
 
     // ----- public methods
     public AttackCharacter():void {
+        // despawn bullet and remove it from the characters array
         
     }
 }
