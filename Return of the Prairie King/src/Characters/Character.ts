@@ -4,8 +4,6 @@ import { STATE } from "../Global/Constants";
 import Object from "../Objects/Object"
 
 export default class Character extends Object {
-
-    protected fireingSpeed:number;
     
     constructor(stage:createjs.StageGL, assetManager:AssetManager) {
         super(stage, assetManager)

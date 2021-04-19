@@ -16,7 +16,7 @@ export default class Object {
     //create sprite variable
     protected _sprite:createjs.Sprite;
 
-    protected _direction:number;
+    protected _direction:number; // not all children use field
 
     //other globals
     protected stage:createjs.StageGL;
