@@ -10103,11 +10103,8 @@ module.exports.formatError = function(err) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
-const Object_1 = __webpack_require__(/*! ../Objects/Object */ "./src/Objects/Object.ts");
-class Character extends Object_1.default {
-    constructor(stage, assetManager) {
-        super(stage, assetManager);
-    }
+const GameObject_1 = __webpack_require__(/*! ../Objects/GameObject */ "./src/Objects/GameObject.ts");
+class Character extends GameObject_1.default {
     killMe() {
         if ((this._state == Constants_1.STATE.DYING) || (this._state == Constants_1.STATE.DEAD)) {
             return;
@@ -10143,11 +10140,12 @@ class Gunslinger extends Character_1.default {
         this._sprite = assetManager.getSprite("assets", "Gunslinger/IdleDown", 0, 0);
         this._sprite.play();
         stage.addChild(this._sprite);
-        this.PositionMe(Constants_1.STAGE_WIDTH / 2, Constants_1.STAGE_HEIGHT / 2);
+        this.PositionMe(Constants_1.STAGE_WIDTH / 2 - 32, Constants_1.STAGE_HEIGHT / 2 - 32);
+        this._sprite.scaleX = 2;
+        this._sprite.scaleY = 2;
         this.currentFireSpeed = 7;
         this.currentMoveSpeed = 3;
-    }
-    Shoot() {
+        stage.addChild(this.sprite);
     }
 }
 exports.default = Gunslinger;
@@ -10174,11 +10172,11 @@ let stage;
 let canvas;
 let assetManager;
 let map;
-let player;
+let test;
 function onReady(e) {
     console.log(">> adding sprites to game");
     map = new Map_1.default(stage, assetManager);
-    player = new Gunslinger_1.default(stage, assetManager);
+    test = new Gunslinger_1.default(stage, assetManager);
     createjs.Ticker.framerate = Constants_1.FRAME_RATE;
     createjs.Ticker.on("tick", onTick);
     console.log(">> game ready");
@@ -10379,10 +10377,10 @@ exports.pointHit = pointHit;
 
 /***/ }),
 
-/***/ "./src/Objects/Object.ts":
-/*!*******************************!*\
-  !*** ./src/Objects/Object.ts ***!
-  \*******************************/
+/***/ "./src/Objects/GameObject.ts":
+/*!***********************************!*\
+  !*** ./src/Objects/GameObject.ts ***!
+  \***********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10397,7 +10395,7 @@ var DIRECTION;
     DIRECTION[DIRECTION["LEFT"] = 2] = "LEFT";
     DIRECTION[DIRECTION["RIGHT"] = 3] = "RIGHT";
 })(DIRECTION || (DIRECTION = {}));
-class Object {
+class GameObject {
     constructor(stage, assetManager) {
         this.stage = stage;
         this._state = Constants_1.STATE.IDLE;
@@ -10443,7 +10441,7 @@ class Object {
         }
     }
 }
-exports.default = Object;
+exports.default = GameObject;
 
 
 /***/ }),

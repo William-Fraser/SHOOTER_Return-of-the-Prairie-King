@@ -1,12 +1,8 @@
 import AssetManager from "../Global/AssetManager";
 import { STATE } from "../Global/Constants";
-import Object from "../Objects/Object";
+import GameObject from "../Objects/GameObject";
 
-export default class Character extends Object {
-    
-    constructor(stage:createjs.StageGL, assetManager:AssetManager) {
-        super(stage, assetManager)
-    }
+export default class Character extends GameObject {
     
     // ----- public methods 
     public killMe():void {

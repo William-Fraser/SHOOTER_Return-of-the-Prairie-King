@@ -1,6 +1,6 @@
 import AssetManager from "../Global/AssetManager";
 import { STAGE_HEIGHT, STAGE_WIDTH } from "../Global/Constants";
-import Object from "./Object";
+import Object from "./GameObject";
 
 export default class Bullet extends Object {
 

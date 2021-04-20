@@ -6,7 +6,7 @@ import "createjs";
 // importing game constants
 import { STAGE_WIDTH, STAGE_HEIGHT, FRAME_RATE, ASSET_MANIFEST } from "./Global/Constants";
 import AssetManager from "./Global/AssetManager";
-import Object from "./Objects/Object"
+import Object from "./Objects/GameObject"
 import Character from "./Characters/Character";
 import Map from "./World/Map"
 import Gunslinger from "./Characters/Gunslinger";
@@ -20,7 +20,7 @@ let assetManager:AssetManager;
 
 // game objects
 let map:Map;
-let player:Gunslinger;
+let test:Gunslinger;
 
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
@@ -28,7 +28,8 @@ function onReady(e:createjs.Event):void {
     
     // construct game object sprites
     map = new Map(stage, assetManager);
-    player = new Gunslinger(stage, assetManager);
+    test = new Gunslinger(stage, assetManager);
+    //player = new Gunslinger(stage, assetManager);
 
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;
