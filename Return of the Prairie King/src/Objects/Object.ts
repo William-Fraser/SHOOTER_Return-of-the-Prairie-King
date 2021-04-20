@@ -9,16 +9,15 @@ enum DIRECTION { // directions are only used by Character and Bullet
 }
 
 export default class Object {
-    //private property variables
+    //protected variables
     protected _movementSpeed:number;
     protected _state:number;
+    protected _direction:number; // not all children use field
 
     //create sprite variable
     protected _sprite:createjs.Sprite;
 
-    protected _direction:number; // not all children use field
-
-    //other globals
+    //protected global fields
     protected stage:createjs.StageGL;
 
     constructor(stage:createjs.StageGL, assetManager:AsserManager)
@@ -67,7 +66,7 @@ export default class Object {
         switch(this._state) {
             case STATE.IDLE:
                 //idle does nothing
-                // set animation to idle?
+                // set animation to idle?, hopefully not
             return;
             case STATE.MOVING:
                 

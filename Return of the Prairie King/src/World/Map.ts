@@ -1,6 +1,6 @@
-import {STAGE_HEIGHT, STAGE_WIDTH} from "../Global/Constants"
-import AssetManager from "../Global/AssetManager"
-import {randomMe} from "../Global/Toolkit"
+import {STAGE_HEIGHT, STAGE_WIDTH} from "../Global/Constants";
+import AssetManager from "../Global/AssetManager";
+import {randomMe} from "../Global/Toolkit";
 
 const TOTALTILES:number = 22; // magic number for the ammount of tiles it takes to cover the square screen
     
@@ -37,8 +37,8 @@ export default class Map {
         }
 
         //init passed fields for easy reading
-        this.stage = stage;
         this.assetManager = assetManager;
+        this.stage = stage;
 
         //create first map
         this.CreateMap();

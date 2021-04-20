@@ -1,7 +1,6 @@
-
-import AssetManager from "../Global/AssetManager"
+import AssetManager from "../Global/AssetManager";
 import { STATE } from "../Global/Constants";
-import Object from "../Objects/Object"
+import Object from "../Objects/Object";
 
 export default class Character extends Object {
     
@@ -19,6 +18,7 @@ export default class Character extends Object {
             this.stage.removeChild(this._sprite);
             this._state = STATE.DEAD;
         });
-        // NEEDS DEATH ANIMATION AFTER SUPER w\ this._state = GameCharacter.STATE_DYING;
+        // NEEDS DEATH ANIMATION AFTER SUPER 
+        //w\ this._state = GameCharacter.STATE_DYING;
     }
 }

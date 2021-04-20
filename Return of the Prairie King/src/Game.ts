@@ -41,7 +41,8 @@ function onTick(e:createjs.Event):void {
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
 
     // This is your game loop :)
-    // ...
+    //player.Update();
+
 
     // update the stage!
     stage.update();

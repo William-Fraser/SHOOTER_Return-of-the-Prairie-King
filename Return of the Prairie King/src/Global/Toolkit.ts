@@ -1,3 +1,5 @@
+import Object from "../Objects/Object";
+
 export function randomMe(low:number, high:number):number {
     let randomNum:number = 0;
     randomNum = Math.floor(Math.random() * (high - low + 1)) + low;

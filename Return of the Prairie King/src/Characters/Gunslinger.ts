@@ -1,7 +1,7 @@
 import AssetManager from "../Global/AssetManager";
 import { STAGE_HEIGHT, STAGE_WIDTH } from "../Global/Constants";
-import Character from "./Character";
-import Bullet from "../Objects/Bullet"
+import Character from "../Characters/Character";
+import Bullet from "../Objects/Bullet";
 
 export default class Gunslinger extends Character {
 
@@ -12,9 +12,16 @@ export default class Gunslinger extends Character {
     constructor(stage:createjs.StageGL, assetManager:AssetManager) {
         super(stage, assetManager);
 
-
+        // init sprite with animation
+        this._sprite = assetManager.getSprite("assets", "Gunslinger/IdleDown", 0, 0);
+        this._sprite.play();
+        stage.addChild(this._sprite);
         this.PositionMe(STAGE_WIDTH/2, STAGE_HEIGHT/2);
-        stage.addChild(this.sprite);
+
+        this.currentFireSpeed = 7;
+        this.currentMoveSpeed = 3;
+
+        //stage.addChild(this.sprite);
     }
 
     //public methods

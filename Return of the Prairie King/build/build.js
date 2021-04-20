@@ -10136,12 +10136,16 @@ exports.default = Character;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
-const Character_1 = __webpack_require__(/*! ./Character */ "./src/Characters/Character.ts");
+const Character_1 = __webpack_require__(/*! ../Characters/Character */ "./src/Characters/Character.ts");
 class Gunslinger extends Character_1.default {
     constructor(stage, assetManager) {
         super(stage, assetManager);
+        this._sprite = assetManager.getSprite("assets", "Gunslinger/IdleDown", 0, 0);
+        this._sprite.play();
+        stage.addChild(this._sprite);
         this.PositionMe(Constants_1.STAGE_WIDTH / 2, Constants_1.STAGE_HEIGHT / 2);
-        stage.addChild(this.sprite);
+        this.currentFireSpeed = 7;
+        this.currentMoveSpeed = 3;
     }
     Shoot() {
     }
@@ -10471,8 +10475,8 @@ class Map {
                 stage.addChild(this.setMap[Y][X]);
             }
         }
-        this.stage = stage;
         this.assetManager = assetManager;
+        this.stage = stage;
         this.CreateMap();
         this.setCurrentMap();
     }
