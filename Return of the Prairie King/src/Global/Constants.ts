@@ -5,8 +5,8 @@ export const STAGE_HEIGHT:number = 704;
 export const FRAME_RATE:number = 30;
 
 //player constants
-export const PLAYER_MOVESPEED:number = 0;
-export const PLAYER_FIRESPEED:number = 0;
+export const PLAYER_MOVESPEED:number = 7;
+export const PLAYER_FIRERATE:number = 2;
 
 //states
 export enum STATE

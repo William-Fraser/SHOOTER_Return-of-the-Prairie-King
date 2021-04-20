@@ -9,7 +9,8 @@ import AssetManager from "./Global/AssetManager";
 import Object from "./Objects/GameObject"
 import Character from "./Characters/Character";
 import Map from "./World/Map"
-import Gunslinger from "./Characters/Gunslinger";
+import Player from "./Characters/Player";
+import UserInput from "./GUI/UserInput";
 
 // game variables
 let stage:createjs.StageGL;
@@ -20,7 +21,8 @@ let assetManager:AssetManager;
 
 // game objects
 let map:Map;
-let test:Gunslinger;
+let player:Player;
+let user:UserInput;
 
 // --------------------------------------------------- event handlers
 function onReady(e:createjs.Event):void {
@@ -28,8 +30,12 @@ function onReady(e:createjs.Event):void {
     
     // construct game object sprites
     map = new Map(stage, assetManager);
-    test = new Gunslinger(stage, assetManager);
-    //player = new Gunslinger(stage, assetManager);
+    player = new Player(stage, assetManager);
+    user = new UserInput();
+
+    //key event listeners
+    document.onkeydown = onKeyDown;
+    document.onkeyup = onKeyUp;
 
     // startup the ticker
     createjs.Ticker.framerate = FRAME_RATE;
@@ -37,12 +43,21 @@ function onReady(e:createjs.Event):void {
     console.log(">> game ready");
 }
 
+function onKeyDown(e:KeyboardEvent):void {
+    user.Input(true, e); // true if key pressed
+}
+
+function onKeyUp(e:KeyboardEvent):void {
+    user.Input(false, e); // false if key if not being pressed
+}
+
 function onTick(e:createjs.Event):void {
     // TESTING FPS
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
 
     // This is your game loop :)
-    //player.Update();
+    player.Update();
+    user.Update(player);
 
 
     // update the stage!

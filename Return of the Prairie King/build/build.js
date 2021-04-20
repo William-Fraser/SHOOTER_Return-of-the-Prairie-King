@@ -10132,23 +10132,230 @@ exports.default = Character;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
 const Character_1 = __webpack_require__(/*! ../Characters/Character */ "./src/Characters/Character.ts");
+const Bullet_1 = __webpack_require__(/*! ../Objects/Bullet */ "./src/Objects/Bullet.ts");
 class Gunslinger extends Character_1.default {
     constructor(stage, assetManager) {
         super(stage, assetManager);
-        this._sprite = assetManager.getSprite("assets", "Gunslinger/IdleDown", 0, 0);
-        this._sprite.play();
-        stage.addChild(this._sprite);
-        this.PositionMe(Constants_1.STAGE_WIDTH / 2 - 32, Constants_1.STAGE_HEIGHT / 2 - 32);
-        this._sprite.scaleX = 2;
-        this._sprite.scaleY = 2;
-        this.currentFireSpeed = 7;
-        this.currentMoveSpeed = 3;
-        stage.addChild(this.sprite);
+        this.eventGunFire = new createjs.Event("GunFire", true, false);
+        this._sprite.on("GunFire", this.onGunFire);
+    }
+    onGunFire() {
+        let bullet = new Bullet_1.default(this.stage, this.assetManager);
+        bullet.ShootBullet(this._sprite.x, this._sprite.y);
+    }
+    FireCooldown() {
+    }
+    ShootGun(fireGun) {
+        this._sprite.dispatchEvent(this.eventGunFire);
     }
 }
 exports.default = Gunslinger;
+
+
+/***/ }),
+
+/***/ "./src/Characters/Player.ts":
+/*!**********************************!*\
+  !*** ./src/Characters/Player.ts ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
+const Gunslinger_1 = __webpack_require__(/*! ./Gunslinger */ "./src/Characters/Gunslinger.ts");
+const GameObject_1 = __webpack_require__(/*! ../Objects/GameObject */ "./src/Objects/GameObject.ts");
+class Player extends Gunslinger_1.default {
+    constructor(stage, assetManager) {
+        super(stage, assetManager);
+        this.currentFireRate = Constants_1.PLAYER_FIRERATE;
+        this.currentMoveSpeed = Constants_1.PLAYER_MOVESPEED;
+        this._sprite = assetManager.getSprite("assets", "Gunslinger/IdleDown", 0, 0);
+        this._sprite.play();
+        stage.addChild(this._sprite);
+        this.PositionMe(Constants_1.STAGE_WIDTH / 2, Constants_1.STAGE_HEIGHT / 2);
+        this._sprite.scaleX = 2;
+        this._sprite.scaleY = 2;
+    }
+    Update() {
+        super.Update();
+        this._movementSpeed = this.currentMoveSpeed;
+        switch (this._state) {
+            case Constants_1.STATE.IDLE:
+                switch (this._lastDirection) {
+                    case GameObject_1.DIRECTION.N:
+                        this._sprite.gotoAndPlay("Gunslinger/IdleUp");
+                        break;
+                    case GameObject_1.DIRECTION.E:
+                        this._sprite.gotoAndPlay("Gunslinger/IdleRight");
+                        break;
+                    case GameObject_1.DIRECTION.S:
+                        this._sprite.gotoAndPlay("Gunslinger/IdleDown");
+                        break;
+                    case GameObject_1.DIRECTION.W:
+                        this._sprite.gotoAndPlay("Gunslinger/IdleLeft");
+                        break;
+                }
+                break;
+            case Constants_1.STATE.MOVING:
+                if (this._direction != this._lastDirection) {
+                    switch (this._direction) {
+                        case GameObject_1.DIRECTION.N:
+                            this._sprite.gotoAndPlay("Gunslinger/WalkUpOne");
+                            break;
+                        case GameObject_1.DIRECTION.E:
+                            this._sprite.gotoAndPlay("Gunslinger/WalkRightOne");
+                            break;
+                        case GameObject_1.DIRECTION.S:
+                            this._sprite.gotoAndPlay("Gunslinger/WalkDownOne");
+                            break;
+                        case GameObject_1.DIRECTION.W:
+                            this._sprite.gotoAndPlay("Gunslinger/WalkLeftOne");
+                            break;
+                    }
+                }
+                break;
+        }
+        this._lastDirection = this._direction;
+    }
+}
+exports.default = Player;
+
+
+/***/ }),
+
+/***/ "./src/GUI/UserInput.ts":
+/*!******************************!*\
+  !*** ./src/GUI/UserInput.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const GameObject_1 = __webpack_require__(/*! ../Objects/GameObject */ "./src/Objects/GameObject.ts");
+class UserInput {
+    constructor() {
+        this.WKey = false;
+        this.AKey = false;
+        this.SKey = false;
+        this.DKey = false;
+        this.leftKey = false;
+        this.rightKey = false;
+        this.upKey = false;
+        this.downKey = false;
+        this.spaceBar = false;
+    }
+    Movement(player) {
+        if (this.WKey) {
+            player.StartMe();
+            player.direction = GameObject_1.DIRECTION.N;
+        }
+        else if (this.WKey && this.AKey) {
+            player.StartMe();
+            player.direction = GameObject_1.DIRECTION.NW;
+        }
+        else if (this.AKey) {
+            player.StartMe();
+            player.direction = GameObject_1.DIRECTION.W;
+        }
+        else if (this.AKey && this.SKey) {
+            player.StartMe();
+            player.direction = GameObject_1.DIRECTION.SW;
+        }
+        else if (this.SKey) {
+            player.StartMe();
+            player.direction = GameObject_1.DIRECTION.S;
+        }
+        else if (this.SKey && this.DKey) {
+            player.StartMe();
+            player.direction = GameObject_1.DIRECTION.SE;
+        }
+        else if (this.DKey) {
+            player.StartMe();
+            player.direction = GameObject_1.DIRECTION.E;
+        }
+        else if (this.DKey && this.WKey) {
+            player.StartMe();
+            player.direction = GameObject_1.DIRECTION.NE;
+        }
+        else {
+            player.IdleMe();
+            player.direction = GameObject_1.DIRECTION.NULL;
+        }
+    }
+    Shooting() {
+        if (this.rightKey) {
+        }
+        else if (this.rightKey && this.upKey) {
+        }
+        else if (this.upKey) {
+        }
+        else if (this.upKey && this.leftKey) {
+        }
+        else if (this.leftKey) {
+        }
+        else if (this.leftKey && this.downKey) {
+        }
+        else if (this.downKey) {
+        }
+        else if (this.downKey && this.rightKey) {
+        }
+    }
+    Input(keyState, e) {
+        if (keyState) {
+            if (e.key == "w")
+                this.WKey = true;
+            else if (e.key == "a")
+                this.AKey = true;
+            else if (e.key == "s")
+                this.SKey = true;
+            else if (e.key == "d")
+                this.DKey = true;
+            else if (e.key == "ArrowUp")
+                this.upKey = true;
+            else if (e.key == "ArrowDown")
+                this.downKey = true;
+            else if (e.key == "ArrowLeft")
+                this.leftKey = true;
+            else if (e.key == "ArrowRight")
+                this.rightKey = true;
+            else if (e.key == " ")
+                this.spaceBar = true;
+        }
+        else {
+            if (e.key == "w")
+                this.WKey = false;
+            else if (e.key == "a")
+                this.AKey = false;
+            else if (e.key == "s")
+                this.SKey = false;
+            else if (e.key == "d")
+                this.DKey = false;
+            else if (e.key == "ArrowUp")
+                this.upKey = false;
+            else if (e.key == "ArrowDown")
+                this.downKey = false;
+            else if (e.key == "ArrowLeft")
+                this.leftKey = false;
+            else if (e.key == "ArrowRight")
+                this.rightKey = false;
+            else if (e.key == " ")
+                this.spaceBar = false;
+        }
+    }
+    Update(player) {
+        this.Movement(player);
+        this.Shooting();
+        if (this.spaceBar) {
+        }
+    }
+}
+exports.default = UserInput;
 
 
 /***/ }),
@@ -10167,22 +10374,35 @@ __webpack_require__(/*! createjs */ "./node_modules/createjs/builds/1.0.0/create
 const Constants_1 = __webpack_require__(/*! ./Global/Constants */ "./src/Global/Constants.ts");
 const AssetManager_1 = __webpack_require__(/*! ./Global/AssetManager */ "./src/Global/AssetManager.ts");
 const Map_1 = __webpack_require__(/*! ./World/Map */ "./src/World/Map.ts");
-const Gunslinger_1 = __webpack_require__(/*! ./Characters/Gunslinger */ "./src/Characters/Gunslinger.ts");
+const Player_1 = __webpack_require__(/*! ./Characters/Player */ "./src/Characters/Player.ts");
+const UserInput_1 = __webpack_require__(/*! ./GUI/UserInput */ "./src/GUI/UserInput.ts");
 let stage;
 let canvas;
 let assetManager;
 let map;
-let test;
+let player;
+let user;
 function onReady(e) {
     console.log(">> adding sprites to game");
     map = new Map_1.default(stage, assetManager);
-    test = new Gunslinger_1.default(stage, assetManager);
+    player = new Player_1.default(stage, assetManager);
+    user = new UserInput_1.default();
+    document.onkeydown = onKeyDown;
+    document.onkeyup = onKeyUp;
     createjs.Ticker.framerate = Constants_1.FRAME_RATE;
     createjs.Ticker.on("tick", onTick);
     console.log(">> game ready");
 }
+function onKeyDown(e) {
+    user.Input(true, e);
+}
+function onKeyUp(e) {
+    user.Input(false, e);
+}
 function onTick(e) {
     document.getElementById("fps").innerHTML = String(createjs.Ticker.getMeasuredFPS());
+    player.Update();
+    user.Update(player);
     stage.update();
 }
 function main() {
@@ -10286,12 +10506,12 @@ exports.default = AssetManager;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ASSET_MANIFEST = exports.STATE = exports.PLAYER_FIRESPEED = exports.PLAYER_MOVESPEED = exports.FRAME_RATE = exports.STAGE_HEIGHT = exports.STAGE_WIDTH = void 0;
+exports.ASSET_MANIFEST = exports.STATE = exports.PLAYER_FIRERATE = exports.PLAYER_MOVESPEED = exports.FRAME_RATE = exports.STAGE_HEIGHT = exports.STAGE_WIDTH = void 0;
 exports.STAGE_WIDTH = 704;
 exports.STAGE_HEIGHT = 704;
 exports.FRAME_RATE = 30;
-exports.PLAYER_MOVESPEED = 0;
-exports.PLAYER_FIRESPEED = 0;
+exports.PLAYER_MOVESPEED = 7;
+exports.PLAYER_FIRERATE = 2;
 var STATE;
 (function (STATE) {
     STATE[STATE["IDLE"] = 0] = "IDLE";
@@ -10377,6 +10597,39 @@ exports.pointHit = pointHit;
 
 /***/ }),
 
+/***/ "./src/Objects/Bullet.ts":
+/*!*******************************!*\
+  !*** ./src/Objects/Bullet.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const GameObject_1 = __webpack_require__(/*! ./GameObject */ "./src/Objects/GameObject.ts");
+class Bullet extends GameObject_1.default {
+    constructor(stage, assetManager) {
+        super(stage, assetManager);
+        this._sprite = assetManager.getSprite("assets", "bullets/RoundGrey", 0, 0);
+        this._sprite.play();
+        stage.addChild(this._sprite);
+    }
+    AttackCharacter() {
+    }
+    DespawnBullet() {
+    }
+    ShootBullet(characterX, characterY) {
+        this.PositionMe(characterX, characterY);
+    }
+    Update() {
+    }
+}
+exports.default = Bullet;
+
+
+/***/ }),
+
 /***/ "./src/Objects/GameObject.ts":
 /*!***********************************!*\
   !*** ./src/Objects/GameObject.ts ***!
@@ -10387,22 +10640,33 @@ exports.pointHit = pointHit;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DIRECTION = void 0;
 const Constants_1 = __webpack_require__(/*! ../Global/Constants */ "./src/Global/Constants.ts");
 var DIRECTION;
 (function (DIRECTION) {
-    DIRECTION[DIRECTION["DOWN"] = 0] = "DOWN";
-    DIRECTION[DIRECTION["UP"] = 1] = "UP";
-    DIRECTION[DIRECTION["LEFT"] = 2] = "LEFT";
-    DIRECTION[DIRECTION["RIGHT"] = 3] = "RIGHT";
-})(DIRECTION || (DIRECTION = {}));
+    DIRECTION[DIRECTION["NULL"] = 0] = "NULL";
+    DIRECTION[DIRECTION["N"] = 1] = "N";
+    DIRECTION[DIRECTION["NW"] = 2] = "NW";
+    DIRECTION[DIRECTION["W"] = 3] = "W";
+    DIRECTION[DIRECTION["SW"] = 4] = "SW";
+    DIRECTION[DIRECTION["S"] = 5] = "S";
+    DIRECTION[DIRECTION["SE"] = 6] = "SE";
+    DIRECTION[DIRECTION["E"] = 7] = "E";
+    DIRECTION[DIRECTION["NE"] = 8] = "NE";
+})(DIRECTION = exports.DIRECTION || (exports.DIRECTION = {}));
 class GameObject {
     constructor(stage, assetManager) {
         this.stage = stage;
+        this.assetManager = assetManager;
         this._state = Constants_1.STATE.IDLE;
+        this._movementSpeed = 1;
+        this._direction = DIRECTION.NULL;
+        this._sprite = assetManager.getSprite("assets", "sprite/animation", 0, 0);
     }
     get sprite() { return this._sprite; }
     get state() { return this._state; }
     set state(value) { this._state = value; }
+    set direction(value) { this._direction = value; }
     StartMe() {
         if (this._state == Constants_1.STATE.IDLE) {
             this._state = Constants_1.STATE.MOVING;
@@ -10419,21 +10683,38 @@ class GameObject {
     }
     Update() {
         let sprite = this._sprite;
+        console.debug("STATE: " + this.state + ", DIRECTION: " + this._direction);
         switch (this._state) {
             case Constants_1.STATE.IDLE:
                 return;
             case Constants_1.STATE.MOVING:
                 switch (this._direction) {
-                    case DIRECTION.UP:
+                    case DIRECTION.N:
                         sprite.y -= this._movementSpeed;
                         return;
-                    case DIRECTION.DOWN:
-                        sprite.y += this._movementSpeed;
-                        return;
-                    case DIRECTION.LEFT:
+                    case DIRECTION.NW:
+                        sprite.y -= this._movementSpeed;
                         sprite.x -= this._movementSpeed;
                         return;
-                    case DIRECTION.RIGHT:
+                    case DIRECTION.W:
+                        sprite.x -= this._movementSpeed;
+                        return;
+                    case DIRECTION.SW:
+                        sprite.y += this._movementSpeed;
+                        sprite.x -= this._movementSpeed;
+                        return;
+                    case DIRECTION.S:
+                        sprite.y += this._movementSpeed;
+                        return;
+                    case DIRECTION.SE:
+                        sprite.y += this._movementSpeed;
+                        sprite.x += this._movementSpeed;
+                        return;
+                    case DIRECTION.E:
+                        sprite.x += this._movementSpeed;
+                        return;
+                    case DIRECTION.NE:
+                        sprite.y -= this._movementSpeed;
                         sprite.x += this._movementSpeed;
                         return;
                 }
@@ -10518,23 +10799,17 @@ class Map {
         let holderY = 0;
         for (let Y = 1; Y <= TOTALTILES; Y++) {
             for (let X = 1; X <= TOTALTILES; X++) {
-                console.debug("X,Y : " + X + "," + Y);
-                console.debug("Xhold,YHold : " + holderX + "," + holderY);
                 if ((Y == 1 || Y == TOTALTILES) || (X == 1 || X == TOTALTILES)) {
                     if (Y == 1) {
-                        console.debug("north");
                         this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Top", holderX, holderY);
                     }
                     else if (X == 1) {
-                        console.debug("west");
                         this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Left", holderX, holderY);
                     }
                     else if (X == TOTALTILES) {
-                        console.debug("east");
                         this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Right", holderX, holderY);
                     }
                     else if (Y == TOTALTILES) {
-                        console.debug("south");
                         this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Bottom", holderX, holderY);
                     }
                     if (Y == TOTALTILES && X == TOTALTILES) {

@@ -3,7 +3,9 @@ import { STATE } from "../Global/Constants";
 import GameObject from "../Objects/GameObject";
 
 export default class Character extends GameObject {
-    
+
+    protected _lastDirection:number;
+
     // ----- public methods 
     public killMe():void {
         if ((this._state == STATE.DYING)||(this._state == STATE.DEAD)) {return;}

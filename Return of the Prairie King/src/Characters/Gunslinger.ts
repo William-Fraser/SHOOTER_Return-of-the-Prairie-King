@@ -1,29 +1,35 @@
 import AssetManager from "../Global/AssetManager";
-import { STAGE_HEIGHT, STAGE_WIDTH } from "../Global/Constants";
 import Character from "../Characters/Character";
 import Bullet from "../Objects/Bullet";
 
-export default class Gunslinger extends Character {
-    
-    private currentMoveSpeed:number;
-    private currentFireSpeed:number;
+export default class Gunslinger extends Character {    
 
-    private bullets:number[]; 
-    
+    //shooting fields
+    private eventGunFire:createjs.Event;
+
     constructor(stage:createjs.StageGL, assetManager:AssetManager) {
         super(stage, assetManager);
+        
+        //init event for Attack
+        this.eventGunFire = new createjs.Event("GunFire", true, false);
+        this._sprite.on("GunFire", this.onGunFire);
+    }
 
-        // init sprite with animation
-        this._sprite = assetManager.getSprite("assets", "Gunslinger/IdleDown", 0, 0);
-        this._sprite.play();
-        stage.addChild(this._sprite);
-        this.PositionMe(STAGE_WIDTH/2-32, STAGE_HEIGHT/2-32); // magic numbers to set in middle of stage
-        this._sprite.scaleX = 2;
-        this._sprite.scaleY = 2;
+    // ----- private methods
+    private onGunFire() {
+        //init new bullet
+        let bullet:Bullet = new Bullet(this.stage, this.assetManager)
+        
+        bullet.ShootBullet(this._sprite.x, this._sprite.y)
+    }
+    private FireCooldown() {
 
-        this.currentFireSpeed = 7;
-        this.currentMoveSpeed = 3;
+    }
+    
+    // ----- public methods
+    public ShootGun(fireGun:boolean):void {
+        //calls to spawn bullet and starts firing cooldown / measured by firespeed
+        this._sprite.dispatchEvent(this.eventGunFire);
 
-        stage.addChild(this.sprite);
     }
 }

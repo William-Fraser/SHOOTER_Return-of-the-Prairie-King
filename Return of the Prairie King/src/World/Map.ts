@@ -108,21 +108,21 @@ export default class Map {
                 
                 
                 // check if tile is part of border
-                console.debug("X,Y : "+X+","+Y);
-                console.debug("Xhold,YHold : "+holderX+","+holderY)
+                //console.debug("X,Y : "+X+","+Y);
+                //console.debug("Xhold,YHold : "+holderX+","+holderY)
                 if ((Y == 1 || Y == TOTALTILES) || (X == 1 || X == TOTALTILES)) {
                     
                     if        (Y == 1) {
-                        console.debug("north");
+                        //console.debug("north");
                         this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Top",     holderX, holderY);
                     } else if (X == 1) {
-                        console.debug("west");
+                        //console.debug("west");
                         this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Left",    holderX, holderY);
                     } else if (X == TOTALTILES) {
-                        console.debug("east");
+                        //console.debug("east");
                         this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Right",   holderX, holderY);
                     } else if (Y == TOTALTILES) {
-                        console.debug("south");
+                        //console.debug("south");
                         this.setMap[Y][X] = this.assetManager.getSprite("assets", "Backgrounds/TileDesert/Bottom",  holderX, holderY);
                     } 
                     //check for corners

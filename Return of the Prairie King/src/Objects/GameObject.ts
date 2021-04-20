@@ -1,11 +1,16 @@
 import AsserManager from "../Global/AssetManager";
 import { STATE } from "../Global/Constants";
 
-enum DIRECTION { // directions are only used by Character and Bullet
-    DOWN,
-    UP,
-    LEFT,
-    RIGHT
+export enum DIRECTION { // directions are used by UserInput and Bullet
+    NULL,
+    N,
+    NW,
+    W,
+    SW,
+    S,
+    SE,
+    E,
+    NE
 }
 
 export default class GameObject {
@@ -19,18 +24,21 @@ export default class GameObject {
 
     //protected global fields
     protected stage:createjs.StageGL;
+    protected assetManager:AsserManager;
 
     constructor(stage:createjs.StageGL, assetManager:AsserManager)
     {
         // init of properties
         this.stage = stage;
+        this.assetManager = assetManager;
         this._state = STATE.IDLE;
         // child sets speed
+        this._movementSpeed = 1;
         // child sets direction
+        this._direction = DIRECTION.NULL; 
 
         // child initializes sprite with animation
-        // this._sprite = assetManager.getSprite("assets", "sprite/animation", 0, 0);
-        // this._sprite.play();
+        this._sprite = assetManager.getSprite("assets", "sprite/animation", 0, 0);// set basic sprite field for events
         // stage.addChild(this._sprite);
 
     }
@@ -42,6 +50,8 @@ export default class GameObject {
     { return this._state; }
     set state(value:number)
     { this._state = value; }
+    set direction(value:number)
+    { this._direction = value; }
 
     // ----- public methods
     public StartMe():void {
@@ -63,24 +73,41 @@ export default class GameObject {
         // reference sprite object for cleaner code below
         let sprite:createjs.Sprite = this._sprite;
 
+        console.debug("STATE: "+this.state+", DIRECTION: "+ this._direction);
         switch(this._state) {
             case STATE.IDLE:
                 //idle does nothing
-                // set animation to idle?, hopefully not
+                // set animation to idle?
             return;
             case STATE.MOVING:
                 
                 switch(this._direction){
-                    case DIRECTION.UP :
+                    case DIRECTION.N :
                         sprite.y -= this._movementSpeed;
                     return;
-                    case DIRECTION.DOWN :
-                        sprite.y += this._movementSpeed;
-                    return;
-                    case DIRECTION.LEFT :
+                    case DIRECTION.NW :
+                        sprite.y -= this._movementSpeed;
                         sprite.x -= this._movementSpeed;
                     return;
-                    case DIRECTION.RIGHT :
+                    case DIRECTION.W :
+                        sprite.x -= this._movementSpeed;
+                    return;
+                    case DIRECTION.SW :
+                        sprite.y += this._movementSpeed;
+                        sprite.x -= this._movementSpeed;
+                    return;
+                    case DIRECTION.S :
+                        sprite.y += this._movementSpeed;
+                    return;
+                    case DIRECTION.SE :
+                        sprite.y += this._movementSpeed
+                        sprite.x += this._movementSpeed;
+                    return;
+                    case DIRECTION.E :
+                        sprite.x += this._movementSpeed;
+                    return;
+                    case DIRECTION.NE :
+                        sprite.y -= this._movementSpeed
                         sprite.x += this._movementSpeed;
                     return;
                 }
